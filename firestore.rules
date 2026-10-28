@@ -7,7 +7,7 @@ service cloud.firestore {
 
     function isStaff() {
       return request.auth != null
-        && request.auth.token.email in ['EMAIL_DA_LOJA@gmail.com'];
+        && request.auth.token.email in ['gordinhoburguer@gmail.com'];
     }
 
     // Cardápio e funcionamento: todo mundo lê, só a equipe altera
