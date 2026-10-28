@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cart.css">
 
   <script>document.documentElement.classList.add('js');</script>
   <script type="importmap">
@@ -102,7 +103,7 @@
       <li><a href="#familia">A Família</a></li>
       <li><a href="#visite">Visite</a></li>
     </ul>
-    <a class="btn btn--primary nav__cta" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-magnetic>
+    <a class="btn btn--primary nav__cta" href="#cardapio" data-magnetic>
       <span>Peça agora</span><svg><use href="#i-arrow"/></svg>
     </a>
     <button class="nav__toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
@@ -113,7 +114,7 @@
     <a href="#cardapio">Cardápio</a>
     <a href="#familia">A Família</a>
     <a href="#visite">Visite</a>
-    <a href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener">Pedir →</a>
+    <a href="#cardapio">Pedir →</a>
     <p>Todos os dias · 16h às 23h<br>Bairro Novo, Carpina</p>
   </nav>
 
@@ -200,7 +201,7 @@
             <span class="split-line"><span data-split>Escolhe o</span></span>
             <span class="split-line"><span data-split>teu <em>Gordinho</em></span></span>
           </h2>
-          <p data-reveal>Toque em qualquer item para pedir pelo nosso delivery oficial.</p>
+          <p data-reveal>Monte seu pedido aqui mesmo: adicione os lanches na sacola e finalize em poucos passos.</p>
         </div>
         <div class="tabs" role="tablist" id="tabs"><span class="tabs__pill"></span></div>
         <div class="menu__grid" id="menu-grid" role="tabpanel"></div>
@@ -302,9 +303,9 @@
                 <div class="hours" id="hours"></div>
               </div>
             </div>
-            <a class="info__item" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-reveal data-cursor="PEDIR">
+            <a class="info__item" href="#cardapio" data-reveal data-cursor="PEDIR">
               <div class="info__icon"><svg><use href="#i-bag"/></svg></div>
-              <div><small>Delivery oficial</small><strong>aidelivery.com.br/gordinhoburguer</strong></div>
+              <div><small>Delivery</small><strong>Peça pelo site, entregamos em Carpina</strong></div>
             </a>
             <a class="info__item" href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener" data-reveal>
               <div class="info__icon"><svg><use href="#i-ig"/></svg></div>
@@ -334,26 +335,100 @@
           <span class="split-line"><span data-footer-word>Bora</span></span>
           <span class="split-line"><span data-footer-word class="stroke">pedir?</span></span>
         </h2>
-        <a class="btn btn--primary" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-magnetic data-cursor="PEDIR">
-          <svg><use href="#i-bag"/></svg><span>Pedir no delivery</span><svg><use href="#i-arrow"/></svg>
+        <a class="btn btn--primary" href="#cardapio" data-magnetic data-cursor="PEDIR">
+          <svg><use href="#i-bag"/></svg><span>Montar meu pedido</span><svg><use href="#i-arrow"/></svg>
         </a>
       </div>
       <div class="footer__bottom">
         <span>© <span id="year"></span> Gordinho Burguer · Carpina - PE</span>
         <nav>
           <a href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener">Instagram</a>
-          <a href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener">Delivery</a>
+          <a href="#cardapio">Cardápio</a>
           <a href="#topo">Voltar ao topo ↑</a>
         </nav>
       </div>
     </div>
   </footer>
 
+  <!-- ===== Sacola ===== -->
+  <button class="cart-fab" id="cart-fab" type="button" aria-label="Abrir sacola"><svg><use href="#i-bag"/></svg><span class="cart-fab__count" id="cart-count">0</span></button>
+
+  <div class="drawer" id="drawer" aria-hidden="true" data-step="cart">
+    <div class="drawer__scrim" data-close></div>
+    <aside class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+      <header class="drawer__head">
+        <div>
+          <span class="eyebrow">Seu pedido</span>
+          <h2 id="drawer-title" class="display">Sacola</h2>
+        </div>
+        <button class="drawer__close" type="button" data-close aria-label="Fechar sacola">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+      <ol class="steps">
+        <li data-s="cart">Sacola</li>
+        <li data-s="checkout">Seus dados</li>
+        <li data-s="done">Enviado</li>
+      </ol>
+
+      <div class="drawer__body" data-lenis-prevent>
+        <section class="pane pane--cart" id="cart-list"></section>
+
+        <form class="pane pane--checkout" id="checkout-form" novalidate>
+          <p class="closed-note" id="closed-note" hidden>A loja está fechada agora. Você pode enviar o pedido e ele será atendido a partir das 16h.</p>
+          <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" autocomplete="name" placeholder="Como te chamamos?"><small>Informe seu nome</small></div>
+          <div class="field"><label for="f-fone">Seu WhatsApp</label><input id="f-fone" name="fone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(81) 9 0000-0000"><small>Informe um número com DDD</small></div>
+
+          <fieldset class="choice">
+            <legend>Como quer receber?</legend>
+            <label><input type="radio" name="tipo" value="entrega" checked><span>🛵 Entrega</span></label>
+            <label><input type="radio" name="tipo" value="retirada"><span>🏃 Retirar no local</span></label>
+          </fieldset>
+
+          <div id="addr-fields" class="field-group">
+            <div class="field"><label for="f-rua">Rua e número</label><input id="f-rua" name="rua" autocomplete="street-address" placeholder="Rua, número, complemento"><small>Informe o endereço</small></div>
+            <div class="field"><label for="f-bairro">Bairro</label><input id="f-bairro" name="bairro" placeholder="Bairro"><small>Informe o bairro</small></div>
+            <div class="field"><label for="f-ref">Ponto de referência <i>(opcional)</i></label><input id="f-ref" name="referencia" placeholder="Perto de..."></div>
+          </div>
+
+          <fieldset class="choice">
+            <legend>Pagamento na entrega</legend>
+            <label><input type="radio" name="pagamento" value="pix" checked><span>Pix</span></label>
+            <label><input type="radio" name="pagamento" value="cartao"><span>Cartão</span></label>
+            <label><input type="radio" name="pagamento" value="dinheiro"><span>Dinheiro</span></label>
+          </fieldset>
+          <div class="field" id="troco-field" hidden><label for="f-troco">Troco para quanto? <i>(opcional)</i></label><input id="f-troco" name="troco" inputmode="decimal" placeholder="Ex.: 100"></div>
+
+          <div class="field"><label for="f-obs">Observações <i>(opcional)</i></label><textarea id="f-obs" name="obs" rows="3" placeholder="Ex.: sem cebola, refri do Gordinho Feliz de uva"></textarea></div>
+          <p class="form-hint">Ao enviar, seu pedido abre no WhatsApp da loja já escrito. É só tocar em enviar por lá para confirmar.</p>
+        </form>
+
+        <section class="pane pane--done">
+          <div class="done-badge"><svg viewBox="0 0 24 24" width="40" height="40"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3 class="display">Pedido pronto!</h3>
+          <p>Abrimos o WhatsApp do Gordinho com seu pedido escrito. Envie a mensagem por lá para confirmar, e a gente responde com a taxa de entrega e o tempo de preparo.</p>
+          <a class="btn btn--primary" id="wa-link" href="#" target="_blank" rel="noopener"><span>Abrir WhatsApp de novo</span></a>
+          <button class="btn btn--ghost" type="button" data-close><span>Voltar ao site</span></button>
+        </section>
+      </div>
+
+      <footer class="drawer__foot">
+        <div class="drawer__total"><span>Subtotal</span><b id="cart-total">R$ 0,00</b></div>
+        <div class="drawer__actions">
+          <button class="btn btn--ghost" type="button" id="cart-back" hidden><span>Voltar</span></button>
+          <button class="btn btn--primary" type="button" id="cart-next"><span>Continuar</span><svg><use href="#i-arrow"/></svg></button>
+        </div>
+      </footer>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
   <script src="js/menu-data.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/cart.js"></script>
   <script type="module" src="js/burger3d.js"></script>
 </body>
 </html>

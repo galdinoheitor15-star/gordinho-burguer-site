@@ -7,7 +7,6 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const brl = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const ORDER = window.ORDER_URL;
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -52,6 +51,7 @@
     const { day, hour } = recifeNow();
     const open = hour >= 16 && hour < 23;
     const pill = $('#status');
+    window.__storeOpen = open;
     pill.classList.toggle('is-open', open);
     pill.querySelector('span').innerHTML = open
       ? '<b>Aberto agora</b> · até as 23h'
@@ -95,7 +95,7 @@
           <p>${h.desc}</p>
           <div class="hcard__foot">
             <span class="price"><small>R$</small>${brl(h.price)}</span>
-            <a class="hcard__add" href="${ORDER}" target="_blank" rel="noopener" aria-label="Pedir ${h.name}"><svg><use href="#i-plus"/></svg></a>
+            <button class="hcard__add" type="button" data-add="${h.name}" aria-label="Adicionar ${h.name} à sacola"><svg><use href="#i-plus"/></svg></button>
           </div>
         </div>
       </article>`).join('');
@@ -153,13 +153,14 @@
         <div class="mcard__media">
           <img src="assets/img/${it.img}.webp" alt="${it.name}" loading="lazy">
           ${it.tag ? `<span class="mcard__tag">${it.tag}</span>` : ''}
+          <span class="qty-badge"></span>
         </div>
         <div class="mcard__body">
           <h3>${it.name}</h3>
           <p>${it.desc || ''}</p>
           <div class="mcard__foot">
             <span class="price"><small>R$</small>${brl(it.price)}</span>
-            <a class="mcard__btn" href="${ORDER}" target="_blank" rel="noopener">Pedir <svg width="16" height="16"><use href="#i-arrow"/></svg></a>
+            <button class="mcard__btn" type="button" data-add="${it.name}">Adicionar <svg width="16" height="16"><use href="#i-plus"/></svg></button>
           </div>
         </div>
         <span class="mcard__glare"></span>
@@ -171,10 +172,10 @@
     if (cat.items) {
       html += cat.items.filter((i) => i.img).map(cardHTML).join('');
       const extras = cat.items.filter((i) => !i.img);
-      if (extras.length) html += `<div class="mlist">${extras.map((e) => `<div class="mlist__item"><span>${e.name}</span><i></i><b>R$ ${brl(e.price)}</b></div>`).join('')}</div>`;
+      if (extras.length) html += `<div class="mlist">${extras.map((e) => `<div class="mlist__item"><span>${e.name}</span><i></i><b>R$ ${brl(e.price)}</b><button class="mlist__add" type="button" data-add="${e.name}" aria-label="Adicionar ${e.name}"><svg><use href="#i-plus"/></svg></button></div>`).join('')}</div>`;
     }
     if (cat.list) {
-      html += `<div class="mlist">${cat.list.map((g) => `<div class="mlist__group">${g.group}</div>` + g.items.map(([n, p]) => `<div class="mlist__item"><span>${n}</span><i></i><b>R$ ${brl(p)}</b></div>`).join('')).join('')}</div>`;
+      html += `<div class="mlist">${cat.list.map((g) => `<div class="mlist__group">${g.group}</div>` + g.items.map(([n, p]) => `<div class="mlist__item"><span>${n}</span><i></i><b>R$ ${brl(p)}</b><button class="mlist__add" type="button" data-add="${n}" aria-label="Adicionar ${n}"><svg><use href="#i-plus"/></svg></button></div>`).join('')).join('')}</div>`;
     }
     grid.innerHTML = html;
     bindTilt();

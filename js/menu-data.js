@@ -1,5 +1,6 @@
 // Cardápio — fonte: aidelivery.com.br/gordinhoburguer (conferir preços antes de publicar)
-window.ORDER_URL = 'https://www.aidelivery.com.br/gordinhoburguer';
+// WhatsApp que recebe os pedidos do site: só números, com 55 + DDD. Ex.: '5581999999999'
+window.WHATSAPP_NUMBER = '5581999189901'; // (81) 9 9918-9901
 
 window.HIGHLIGHTS = [
   { name: 'Gordinho Burguer', img: 'p25', price: 42, desc: 'Pão american bread, 2× blend de fraldinha 150g, ovo, bacon, cheddar cremoso, alface, tomate, cebola caramelizada e maionese.' },
