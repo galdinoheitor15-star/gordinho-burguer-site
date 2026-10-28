@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gordinho Burguer · Carpina</title>
+  <meta name="description" content="Gordinho Burguer — hambúrgueres artesanais no Bairro Novo, Carpina-PE. Aberto todos os dias das 16h às 23h. Peça pelo delivery!">
+  <meta name="theme-color" content="#0b0806">
+  <meta property="og:title" content="Gordinho Burguer · Carpina">
+  <meta property="og:description" content="Falaa família do Gordinho Burguer! Aberto todos os dias das 16h às 23h.">
+  <meta property="og:image" content="assets/img/p25.webp">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>document.documentElement.classList.add('js');</script>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body class="is-loading">
+
+  <!-- ===== Logo (vetor) ===== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="bunGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffb347"/>
+        <stop offset="1" stop-color="#f2601b"/>
+      </linearGradient>
+      <symbol id="logo" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="98" fill="#0b0806"/>
+        <circle cx="100" cy="100" r="95" fill="none" stroke="#ff8c1a" stroke-width="2.5" opacity=".9"/>
+        <g fill="none" stroke="#e8571e" stroke-width="5" stroke-linecap="round">
+          <path d="M86 42c-6-6 4-10-2-17"/><path d="M100 37c-7-7 5-11-2-19"/><path d="M114 42c-6-6 4-10-2-17"/>
+        </g>
+        <path d="M54 92c0-28 20-44 46-44s46 16 46 44z" fill="url(#bunGrad)"/>
+        <text x="100" y="88" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="40" fill="#a8320c">G</text>
+        <path d="M52 96q6-5 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0v6H52z" fill="#6cc24a"/>
+        <rect x="56" y="101" width="88" height="7" rx="3.5" fill="#e5331b"/>
+        <rect x="54" y="107" width="92" height="11" rx="5.5" fill="#3a1b0e"/>
+        <path d="M56 118h88v3c0 6-5 10-11 10H67c-6 0-11-4-11-10z" fill="url(#bunGrad)"/>
+        <text x="100" y="158" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="22" fill="#fff4e3" textLength="134" lengthAdjust="spacingAndGlyphs">GORDINHO</text>
+        <path d="M52 173h14M134 173h14" stroke="#e5331b" stroke-width="3" stroke-linecap="round"/>
+        <text x="100" y="178" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="800" font-size="14" fill="#ff8c1a" textLength="62" lengthAdjust="spacingAndGlyphs">BURGUER</text>
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+      <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></symbol>
+      <symbol id="i-burger" viewBox="0 0 40 40"><path d="M7 17c0-7 6-11 13-11s13 4 13 11z" fill="currentColor"/><path d="M6 21q3-2.5 6 0t7 0t7 0t7 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><rect x="6" y="24" width="28" height="4.5" rx="2.25" fill="currentColor"/><path d="M8 31h24v1a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3z" fill="currentColor"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ===== Preloader ===== -->
+  <div class="preloader" aria-hidden="true">
+    <div class="preloader__panel preloader__panel--1"></div>
+    <div class="preloader__panel preloader__panel--2"></div>
+    <div class="preloader__inner">
+      <svg class="preloader__logo" viewBox="0 0 200 200">
+        <circle class="pl-layer pl-ring" cx="100" cy="100" r="98" fill="#140f0b" stroke="#ff8c1a" stroke-width="2.5"/>
+        <g class="pl-layer pl-steam" fill="none" stroke="#e8571e" stroke-width="5" stroke-linecap="round">
+          <path d="M86 42c-6-6 4-10-2-17"/><path d="M100 37c-7-7 5-11-2-19"/><path d="M114 42c-6-6 4-10-2-17"/>
+        </g>
+        <path class="pl-layer pl-drop" d="M56 118h88v3c0 6-5 10-11 10H67c-6 0-11-4-11-10z" fill="url(#bunGrad)"/>
+        <rect class="pl-layer pl-drop" x="54" y="107" width="92" height="11" rx="5.5" fill="#5a2a12"/>
+        <rect class="pl-layer pl-drop" x="56" y="101" width="88" height="7" rx="3.5" fill="#e5331b"/>
+        <path class="pl-layer pl-drop" d="M52 96q6-5 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0v6H52z" fill="#6cc24a"/>
+        <g class="pl-layer pl-drop">
+          <path d="M54 92c0-28 20-44 46-44s46 16 46 44z" fill="url(#bunGrad)"/>
+          <text x="100" y="88" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="40" fill="#a8320c">G</text>
+        </g>
+        <g class="pl-layer pl-text">
+          <text x="100" y="158" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="22" fill="#fff4e3" textLength="134" lengthAdjust="spacingAndGlyphs">GORDINHO</text>
+          <path d="M52 173h14M134 173h14" stroke="#e5331b" stroke-width="3" stroke-linecap="round"/>
+          <text x="100" y="178" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="800" font-size="14" fill="#ff8c1a" textLength="62" lengthAdjust="spacingAndGlyphs">BURGUER</text>
+        </g>
+      </svg>
+      <div class="preloader__bar"><span></span></div>
+      <div class="preloader__count"><span id="pl-count">0</span>%</div>
+    </div>
+  </div>
+
+  <div class="cursor"><span>PEDIR</span></div>
+
+  <!-- ===== Navegação ===== -->
+  <header class="nav">
+    <a href="#topo" class="nav__brand" aria-label="Gordinho Burguer — início">
+      <svg><use href="#logo"/></svg>
+      <b>Gordinho<small>BURGUER</small></b>
+    </a>
+    <ul class="nav__links">
+      <li><a href="#destaques">Destaques</a></li>
+      <li><a href="#cardapio">Cardápio</a></li>
+      <li><a href="#familia">A Família</a></li>
+      <li><a href="#visite">Visite</a></li>
+    </ul>
+    <a class="btn btn--primary nav__cta" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-magnetic>
+      <span>Peça agora</span><svg><use href="#i-arrow"/></svg>
+    </a>
+    <button class="nav__toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <nav class="mobile-menu" aria-label="Menu">
+    <a href="#destaques">Destaques</a>
+    <a href="#cardapio">Cardápio</a>
+    <a href="#familia">A Família</a>
+    <a href="#visite">Visite</a>
+    <a href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener">Pedir →</a>
+    <p>Todos os dias · 16h às 23h<br>Bairro Novo, Carpina</p>
+  </nav>
+
+  <main id="topo">
+
+    <!-- ===== Hero + Hambúrguer 3D ===== -->
+    <section class="stage" aria-label="Apresentação">
+      <div class="stage__sticky">
+        <div class="stage__bg"></div>
+        <div class="stage__word" aria-hidden="true">GORDINHO</div>
+        <canvas id="burger-canvas" aria-hidden="true"></canvas>
+        <div class="stage__fallback"><img src="assets/img/p25.webp" alt="Gordinho Burguer"></div>
+
+        <div class="hero">
+          <div class="container">
+            <div class="hero__content">
+              <div class="status-pill" id="status"><i></i><span>Carregando horário…</span></div>
+              <h1 class="hero__title display" aria-label="Fome de gordinho se resolve aqui">
+                <span class="split-line"><span data-hero-line>Fome de</span></span>
+                <span class="split-line"><span data-hero-line class="accent">gordinho</span></span>
+                <span class="split-line"><span data-hero-line><span class="outline">se resolve</span></span></span>
+                <span class="split-line"><span data-hero-line>aqui.</span></span>
+              </h1>
+              <p class="hero__lead" data-hero-fade>Falaa família! Blend de fraldinha suculento, <b>pão brioche selado na hora</b> e cheddar escorrendo. Do Bairro Novo para toda Carpina.</p>
+              <div class="hero__actions" data-hero-fade>
+                <a class="btn btn--primary" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-magnetic data-cursor="PEDIR">
+                  <svg><use href="#i-bag"/></svg><span>Fazer pedido</span>
+                </a>
+                <a class="btn btn--ghost" href="#cardapio" data-magnetic><span>Ver cardápio</span><svg><use href="#i-arrow"/></svg></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage__chapter">
+          <span class="eyebrow">Anatomia</span>
+          <h2 class="display">Camada por camada</h2>
+          <p>Cada Gordinho é montado na hora, do pão tostado na chapa até o último fio de cheddar.</p>
+        </div>
+
+        <div class="labels" id="labels"></div>
+
+        <div class="stage__outro">
+          <span class="eyebrow">Montado com carinho</span>
+          <h2 class="display">Do jeito que a <em>família</em> gosta.</h2>
+        </div>
+
+        <div class="stage__progress"><span></span></div>
+        <div class="hero__scroll" data-hero-fade>Role<span></span></div>
+      </div>
+    </section>
+
+    <!-- ===== Marquees ===== -->
+    <div class="marquee" data-marquee="1">
+      <div class="marquee__track" data-items="Blend de fraldinha|Pão brioche|Cheddar cremoso|Bacon crocante|Cebola caramelizada|Queijo coalho"></div>
+    </div>
+    <div class="marquee marquee--alt" data-marquee="-1">
+      <div class="marquee__track" data-items="Aberto todos os dias|16h às 23h|Bairro Novo · Carpina|Delivery e salão"></div>
+    </div>
+
+    <!-- ===== Destaques ===== -->
+    <section class="highlights" id="destaques">
+      <div class="container highlights__head">
+        <div>
+          <span class="eyebrow" data-reveal>Especiais do Gordinho</span>
+          <h2 class="section-title display">
+            <span class="split-line"><span data-split>Os pesos</span></span>
+            <span class="split-line"><span data-split><em>pesados</em> da casa</span></span>
+          </h2>
+        </div>
+        <p data-reveal>Os burgers que fizeram a fama do Gordinho em Carpina. Blend de fraldinha, pão american bread e combinações que só tem aqui.</p>
+      </div>
+      <div class="hscroll">
+        <div class="hscroll__track" id="hscroll-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== Cardápio ===== -->
+    <section class="menu" id="cardapio">
+      <div class="container">
+        <div class="menu__head">
+          <span class="eyebrow" data-reveal>Cardápio completo</span>
+          <h2 class="section-title display">
+            <span class="split-line"><span data-split>Escolhe o</span></span>
+            <span class="split-line"><span data-split>teu <em>Gordinho</em></span></span>
+          </h2>
+          <p data-reveal>Toque em qualquer item para pedir pelo nosso delivery oficial.</p>
+        </div>
+        <div class="tabs" role="tablist" id="tabs"><span class="tabs__pill"></span></div>
+        <div class="menu__grid" id="menu-grid" role="tabpanel"></div>
+      </div>
+    </section>
+
+    <!-- ===== Família ===== -->
+    <section class="family" id="familia">
+      <div class="container">
+        <div class="family__grid">
+          <div class="family__text">
+            <span class="eyebrow" data-reveal>A família do Gordinho</span>
+            <h2 class="section-title display">
+              <span class="split-line"><span data-split>Aqui não</span></span>
+              <span class="split-line"><span data-split>tem cliente,</span></span>
+              <span class="split-line"><span data-split><em>tem família.</em></span></span>
+            </h2>
+            <p data-reveal>O Gordinho nasceu no Bairro Novo com uma ideia simples: hambúrguer caprichado, preço justo e aquele atendimento de quem conhece todo mundo pelo nome. Hoje a família passa de 14 mil no Instagram — e a chapa não para, todos os dias da semana.</p>
+            <div class="hero__actions" data-reveal>
+              <a class="btn btn--primary" href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener" data-magnetic><svg><use href="#i-ig"/></svg><span>@ogordinhoburguer</span></a>
+            </div>
+          </div>
+          <div class="family__media">
+            <div class="family__sticker" aria-hidden="true">
+              <svg viewBox="0 0 140 140">
+                <defs><path id="circ" d="M70 70m-52 0a52 52 0 1 1 104 0a52 52 0 1 1-104 0"/></defs>
+                <text font-family="Outfit" font-weight="800" font-size="13" letter-spacing="3.2" fill="#0b0806"><textPath href="#circ">FEITO NA HORA • FEITO COM AMOR • </textPath></text>
+              </svg>
+              <div class="core">🍔</div>
+            </div>
+            <figure class="f1" data-parallax="-60"><img src="assets/img/p16.webp" alt="Gordin Cheddar" loading="lazy"></figure>
+            <figure class="f2" data-parallax="50"><img src="assets/img/p4.webp" alt="Batata frita com cheddar e bacon" loading="lazy"></figure>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat" data-reveal><b><span data-count="14.4" data-decimals="1">0</span><em>mil</em></b><span>seguidores na família</span></div>
+          <div class="stat" data-reveal><b><span data-count="7">0</span><em>/7</em></b><span>aberto todos os dias</span></div>
+          <div class="stat" data-reveal><b><span data-count="40">0</span><em>+</em></b><span>itens no cardápio</span></div>
+          <div class="stat" data-reveal><b><span data-count="7">0</span><em>h</em></b><span>de chapa quente por dia</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Galeria ===== -->
+    <section class="gallery" aria-label="Galeria">
+      <div class="container">
+        <div class="gallery__head">
+          <div>
+            <span class="eyebrow" data-reveal>Direto da chapa</span>
+            <h2 class="section-title display">
+              <span class="split-line"><span data-split>Dá pra sentir</span></span>
+              <span class="split-line"><span data-split>o <em>cheiro</em>?</span></span>
+            </h2>
+          </div>
+          <a class="btn btn--ghost" style="color:var(--bg);border-color:rgba(11,8,6,.25)" href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener" data-reveal><svg><use href="#i-ig"/></svg><span>Mais no Instagram</span></a>
+        </div>
+        <div class="gallery__cols">
+          <div class="gallery__col" data-speed="-18">
+            <figure><img src="assets/img/p25.webp" alt="Gordinho Burguer" loading="lazy"></figure>
+            <figure class="wide"><img src="assets/img/p4.webp" alt="Batata cheddar e bacon" loading="lazy"></figure>
+            <figure><img src="assets/img/p17.webp" alt="Gordin Chicken" loading="lazy"></figure>
+            <figure class="wide"><img src="assets/img/p37.webp" alt="Hot dog cheese" loading="lazy"></figure>
+          </div>
+          <div class="gallery__col" data-speed="16">
+            <figure class="wide"><img src="assets/img/p5.webp" alt="Batata com creme de queijo e costela BBQ" loading="lazy"></figure>
+            <figure><img src="assets/img/p23.webp" alt="Gordin Nordestino" loading="lazy"></figure>
+            <figure><img src="assets/img/p45.webp" alt="Milk-shake Ninho com Nutella" loading="lazy"></figure>
+            <figure class="wide"><img src="assets/img/p19.webp" alt="Gordin Onion" loading="lazy"></figure>
+            <figure><img src="assets/img/p100.webp" alt="Paleta mexicana" loading="lazy"></figure>
+          </div>
+          <div class="gallery__col" data-speed="-30">
+            <figure><img src="assets/img/p24.webp" alt="G Costela" loading="lazy"></figure>
+            <figure class="wide"><img src="assets/img/p6.webp" alt="Batata com carne de sol" loading="lazy"></figure>
+            <figure><img src="assets/img/p21.webp" alt="Gordin Gorgonzola" loading="lazy"></figure>
+            <figure class="wide"><img src="assets/img/p35.webp" alt="Baguete de carne de sol" loading="lazy"></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Visite ===== -->
+    <section class="visit" id="visite">
+      <div class="container">
+        <span class="eyebrow" data-reveal>Visite a gente</span>
+        <h2 class="section-title display">
+          <span class="split-line"><span data-split>Cola no</span></span>
+          <span class="split-line"><span data-split><em>Gordinho</em></span></span>
+        </h2>
+        <div class="visit__grid">
+          <div class="info">
+            <div class="info__item" data-reveal>
+              <div class="info__icon"><svg><use href="#i-pin"/></svg></div>
+              <div><small>Endereço</small><strong>Rua José Jaime Coutinho Dias, 366<br>Bairro Novo · Carpina - PE</strong></div>
+            </div>
+            <div class="info__item" data-reveal>
+              <div class="info__icon"><svg><use href="#i-clock"/></svg></div>
+              <div style="flex:1"><small>Horário</small><strong>Todos os dias · 16h às 23h</strong>
+                <div class="hours" id="hours"></div>
+              </div>
+            </div>
+            <a class="info__item" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-reveal data-cursor="PEDIR">
+              <div class="info__icon"><svg><use href="#i-bag"/></svg></div>
+              <div><small>Delivery oficial</small><strong>aidelivery.com.br/gordinhoburguer</strong></div>
+            </a>
+            <a class="info__item" href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener" data-reveal>
+              <div class="info__icon"><svg><use href="#i-ig"/></svg></div>
+              <div><small>Instagram</small><strong>@ogordinhoburguer</strong></div>
+            </a>
+          </div>
+          <div class="map" data-reveal>
+            <iframe title="Mapa do Gordinho Burguer" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=Rua+Jos%C3%A9+Jaime+Coutinho+Dias,+366,+Bairro+Novo,+Carpina+-+PE&z=16&output=embed"></iframe>
+            <div class="map__pin">
+              <b>Gordinho Burguer</b>
+              <a class="btn btn--primary" href="https://www.google.com/maps/dir/?api=1&destination=Rua+Jos%C3%A9+Jaime+Coutinho+Dias%2C+366%2C+Bairro+Novo%2C+Carpina+-+PE" target="_blank" rel="noopener"><span>Como chegar</span><svg><use href="#i-arrow"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Rodapé ===== -->
+  <footer class="footer">
+    <svg class="footer__logo" aria-hidden="true"><use href="#logo"/></svg>
+    <div class="container">
+      <div class="footer__cta">
+        <span class="eyebrow" style="color:var(--bg)">Bateu a fome?</span>
+        <h2 class="display" aria-label="Bora pedir?">
+          <span class="split-line"><span data-footer-word>Bora</span></span>
+          <span class="split-line"><span data-footer-word class="stroke">pedir?</span></span>
+        </h2>
+        <a class="btn btn--primary" href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener" data-magnetic data-cursor="PEDIR">
+          <svg><use href="#i-bag"/></svg><span>Pedir no delivery</span><svg><use href="#i-arrow"/></svg>
+        </a>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span id="year"></span> Gordinho Burguer · Carpina - PE</span>
+        <nav>
+          <a href="https://www.instagram.com/ogordinhoburguer/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.aidelivery.com.br/gordinhoburguer" target="_blank" rel="noopener">Delivery</a>
+          <a href="#topo">Voltar ao topo ↑</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/menu-data.js"></script>
+  <script src="js/main.js"></script>
+  <script type="module" src="js/burger3d.js"></script>
+</body>
+</html>
