@@ -29,7 +29,12 @@
       if (target === null) return;
       e.preventDefault();
       document.body.classList.remove('menu-open');
-      if (lenis) lenis.scrollTo(target, { offset: -60, duration: 1.6 });
+      if (lenis && a.hasAttribute('data-tour')) {
+        // passeio guiado: atravessa a apresentação 3D e os destaques até o cardápio
+        const dist = target.getBoundingClientRect().top - 60;
+        const duration = gsap.utils.clamp(4, 10, (dist / window.innerHeight) * 1.15);
+        lenis.scrollTo(target, { offset: -60, duration, lock: true, easing: (t) => -(Math.cos(Math.PI * t) - 1) / 2 });
+      } else if (lenis) lenis.scrollTo(target, { offset: -60, duration: 1.6 });
       else if (target === 0) window.scrollTo(0, 0);
       else target.scrollIntoView();
     });
