@@ -47,16 +47,28 @@
     const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
     return { day: wd, hour: Number(get('hour')) % 24, minute: Number(get('minute')) };
   }
+  const toMin = (hhmm) => { const [h, m] = String(hhmm || '0:0').split(':').map(Number); return h * 60 + (m || 0); };
+  const fmtH = (hhmm) => { const [h, m] = String(hhmm).split(':'); return Number(m) ? `${Number(h)}h${m}` : `${Number(h)}h`; };
+  window.GB = window.GB || {};
+  const GBs = window.GB;
+  GBs.store = { mode: 'auto', start: '16:00', end: '23:00' };
+  GBs.setStore = (st) => { if (st) GBs.store = { ...GBs.store, ...st }; renderStatus(); };
   function renderStatus() {
-    const { day, hour } = recifeNow();
-    const open = hour >= 16 && hour < 23;
+    const { day, hour, minute } = recifeNow();
+    const { mode, start, end } = GBs.store;
+    const now = hour * 60 + minute, a = toMin(start), b = toMin(end);
+    const inHours = a <= b ? now >= a && now < b : now >= a || now < b;
+    const open = mode === 'open' || (mode === 'auto' && inHours);
     const pill = $('#status');
     window.__storeOpen = open;
+    GBs.storeOpen = open;
+    GBs.storeClosedMsg = mode === 'closed' ? 'A loja fechou mais cedo hoje. Volte amanhã!' : `Abrimos às ${fmtH(start)}.`;
     pill.classList.toggle('is-open', open);
     pill.querySelector('span').innerHTML = open
-      ? '<b>Aberto agora</b> · até as 23h'
-      : hour < 16 ? 'Fechado · abre hoje às 16h' : 'Fechado · abre amanhã às 16h';
+      ? `<b>Aberto agora</b> · até as ${fmtH(end)}`
+      : mode === 'closed' ? 'Fechado no momento' : now < a ? `Fechado · abre hoje às ${fmtH(start)}` : `Fechado · abre amanhã às ${fmtH(start)}`;
     $('#hours').innerHTML = DAYS.map((d, i) => `<span class="${i === day ? 'is-today' : ''}">${d}</span>`).join('');
+    window.dispatchEvent(new Event('gb:store'));
   }
   renderStatus();
   setInterval(renderStatus, 60000);
@@ -82,26 +94,54 @@
     });
   });
 
+  /* ---------- Catálogo (estático ou vindo do painel) ---------- */
+  const slug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const imgSrc = (img) => (!img ? '' : /^(data:|https?:)/.test(img) ? img : `assets/img/${img}.webp`);
+  const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const GB = (window.GB = window.GB || {});
+  GB.imgSrc = imgSrc;
+  GB.catalog = new Map();
+  let cats = [];
+  let highlights = [];
+
+  function setMenu(newCats, newHl) {
+    cats = newCats.filter((c) => c.items.length);
+    highlights = newHl;
+    GB.catalog = new Map();
+    cats.forEach((c) => c.items.forEach((i) => GB.catalog.set(i.id, i)));
+    highlights.forEach((h) => { if (!GB.catalog.has(h.id)) GB.catalog.set(h.id, h); });
+    renderHighlights();
+    buildTabs();
+    window.dispatchEvent(new Event('gb:menu'));
+  }
+  GB.setMenu = setMenu;
+
+  // documentos do banco -> formato do site
+  GB.setMenuFromDb = (categories, products) => {
+    const item = (p) => ({ id: p.id, name: p.name, price: Number(p.price) || 0, img: p.img, desc: p.desc, tag: p.tag, available: p.available !== false, groups: p.groups || [], group: p.subgroup || '' });
+    const c = categories.map((cat) => ({ id: cat.id, label: cat.name, items: products.filter((p) => p.categoryId === cat.id).map(item) }));
+    const hl = products.filter((p) => p.featured && p.img).map(item);
+    setMenu(c, hl.length ? hl : highlights);
+  };
+
+  function staticMenu() {
+    const base = (o) => ({ available: true, groups: [], ...o, id: slug(o.name) });
+    const c = window.MENU.map((cat) => ({
+      id: cat.id,
+      label: cat.label,
+      items: [
+        ...(cat.items || []).map(base),
+        ...(cat.list || []).flatMap((g) => g.items.map(([n, p]) => base({ name: n, price: p, group: g.group })))
+      ]
+    }));
+    return [c, window.HIGHLIGHTS.map(base)];
+  }
+
+  const addLabel = (it) => (!it.available ? 'Esgotado' : it.groups?.length ? 'Escolher' : 'Adicionar');
+
   /* ---------- Destaques (scroll horizontal com 3D) ---------- */
   const hTrack = $('#hscroll-track');
-  hTrack.innerHTML =
-    `<div class="hcard hcard--intro"><div><div class="big">0${window.HIGHLIGHTS.length}</div><p>especiais pra quem chega com fome de verdade. Arrasta pro lado →</p></div></div>` +
-    window.HIGHLIGHTS.map((h, i) => `
-      <article class="hcard" data-cursor="PEDIR">
-        <div class="hcard__img"><img src="assets/img/${h.img}.webp" alt="${h.name}" loading="lazy"></div>
-        <span class="hcard__num">0${i + 1}</span>
-        <div class="hcard__body">
-          <h3>${h.name}</h3>
-          <p>${h.desc}</p>
-          <div class="hcard__foot">
-            <span class="price"><small>R$</small>${brl(h.price)}</span>
-            <button class="hcard__add" type="button" data-add="${h.name}" aria-label="Adicionar ${h.name} à sacola"><svg><use href="#i-plus"/></svg></button>
-          </div>
-        </div>
-      </article>`).join('');
-
-  const hCards = $$('.hcard:not(.hcard--intro)', hTrack);
-  const hImgs = hCards.map((c) => $('.hcard__img', c));
+  let hCards = [], hImgs = [], hTween = null;
   function updateHCards() {
     const cx = window.innerWidth / 2;
     hCards.forEach((card, i) => {
@@ -111,8 +151,28 @@
       gsap.set(hImgs[i], { xPercent: d * -10 });
     });
   }
-  if (!reduced) {
-    gsap.to(hTrack, {
+  function renderHighlights() {
+    const n = String(highlights.length).padStart(2, '0');
+    hTrack.innerHTML =
+      `<div class="hcard hcard--intro"><div><div class="big">${n}</div><p>especiais pra quem chega com fome de verdade. Arrasta pro lado →</p></div></div>` +
+      highlights.map((h, i) => `
+        <article class="hcard${h.available ? '' : ' is-out'}" data-cursor="PEDIR">
+          <div class="hcard__img"><img src="${imgSrc(h.img)}" alt="${esc(h.name)}" loading="lazy"></div>
+          <span class="hcard__num">${String(i + 1).padStart(2, '0')}</span>
+          <div class="hcard__body">
+            <h3>${esc(h.name)}</h3>
+            <p>${esc(h.desc)}</p>
+            <div class="hcard__foot">
+              <span class="price"><small>R$</small>${brl(h.price)}</span>
+              <button class="hcard__add" type="button" data-add="${h.id}" ${h.available ? '' : 'disabled'} aria-label="${addLabel(h)}: ${esc(h.name)}"><svg><use href="#i-plus"/></svg></button>
+            </div>
+          </div>
+        </article>`).join('');
+    hCards = $$('.hcard:not(.hcard--intro)', hTrack);
+    hImgs = hCards.map((c) => $('.hcard__img', c));
+    if (reduced) { $('.hscroll').style.overflowX = 'auto'; return; }
+    if (hTween) { hTween.scrollTrigger.kill(); hTween.kill(); gsap.set(hTrack, { x: 0 }); }
+    hTween = gsap.to(hTrack, {
       x: () => -(hTrack.scrollWidth - window.innerWidth),
       ease: 'none',
       scrollTrigger: {
@@ -126,22 +186,28 @@
       }
     });
     updateHCards();
-  } else {
-    $('.hscroll').style.overflowX = 'auto';
+    ScrollTrigger.refresh();
   }
 
   /* ---------- Cardápio ---------- */
   const tabsEl = $('#tabs');
   const pill = $('.tabs__pill', tabsEl);
   const grid = $('#menu-grid');
-  window.MENU.forEach((cat, i) => {
-    const b = document.createElement('button');
-    b.className = 'tab' + (i === 0 ? ' is-active' : '');
-    b.textContent = cat.label;
-    b.setAttribute('role', 'tab');
-    b.dataset.id = cat.id;
-    tabsEl.appendChild(b);
-  });
+  let activeCat = null;
+  function buildTabs() {
+    $$('.tab', tabsEl).forEach((t) => t.remove());
+    if (!cats.find((c) => c.id === activeCat)) activeCat = cats[0]?.id;
+    cats.forEach((cat) => {
+      const b = document.createElement('button');
+      b.className = 'tab' + (cat.id === activeCat ? ' is-active' : '');
+      b.textContent = cat.label;
+      b.setAttribute('role', 'tab');
+      b.dataset.id = cat.id;
+      tabsEl.appendChild(b);
+    });
+    if (activeCat) renderCat(activeCat);
+    requestAnimationFrame(() => { const a = $('.tab.is-active', tabsEl); a && movePill(a, true); });
+  }
   function movePill(btn, instant) {
     pill.style.transition = instant ? 'none' : '';
     pill.style.width = btn.offsetWidth + 'px';
@@ -149,35 +215,38 @@
   }
   function cardHTML(it) {
     return `
-      <article class="mcard">
+      <article class="mcard${it.available ? '' : ' is-out'}">
         <div class="mcard__media">
-          <img src="assets/img/${it.img}.webp" alt="${it.name}" loading="lazy">
-          ${it.tag ? `<span class="mcard__tag">${it.tag}</span>` : ''}
-          <span class="qty-badge"></span>
+          <img src="${imgSrc(it.img)}" alt="${esc(it.name)}" loading="lazy">
+          ${it.tag ? `<span class="mcard__tag">${esc(it.tag)}</span>` : ''}
+          ${it.available ? '<span class="qty-badge"></span>' : '<span class="out-badge">Esgotado</span>'}
         </div>
         <div class="mcard__body">
-          <h3>${it.name}</h3>
-          <p>${it.desc || ''}</p>
+          <h3>${esc(it.name)}</h3>
+          <p>${esc(it.desc)}</p>
           <div class="mcard__foot">
-            <span class="price"><small>R$</small>${brl(it.price)}</span>
-            <button class="mcard__btn" type="button" data-add="${it.name}">Adicionar <svg width="16" height="16"><use href="#i-plus"/></svg></button>
+            <span class="price">${it.groups?.length ? '<small>a partir de </small>' : ''}<small>R$</small>${brl(it.price)}</span>
+            <button class="mcard__btn" type="button" data-add="${it.id}" ${it.available ? '' : 'disabled'}>${addLabel(it)} <svg width="16" height="16"><use href="#i-plus"/></svg></button>
           </div>
         </div>
         <span class="mcard__glare"></span>
       </article>`;
   }
+  function listHTML(items) {
+    let lastGroup = null;
+    return `<div class="mlist">${items.map((e) => {
+      const head = e.group && e.group !== lastGroup ? `<div class="mlist__group">${esc(e.group)}</div>` : '';
+      lastGroup = e.group || lastGroup;
+      return head + `<div class="mlist__item${e.available ? '' : ' is-out'}"><span>${esc(e.name)}${e.available ? '' : ' <em>esgotado</em>'}</span><i></i><b>R$ ${brl(e.price)}</b><button class="mlist__add" type="button" data-add="${e.id}" ${e.available ? '' : 'disabled'} aria-label="${addLabel(e)}: ${esc(e.name)}"><svg><use href="#i-plus"/></svg></button></div>`;
+    }).join('')}</div>`;
+  }
   function renderCat(id) {
-    const cat = window.MENU.find((c) => c.id === id);
-    let html = '';
-    if (cat.items) {
-      html += cat.items.filter((i) => i.img).map(cardHTML).join('');
-      const extras = cat.items.filter((i) => !i.img);
-      if (extras.length) html += `<div class="mlist">${extras.map((e) => `<div class="mlist__item"><span>${e.name}</span><i></i><b>R$ ${brl(e.price)}</b><button class="mlist__add" type="button" data-add="${e.name}" aria-label="Adicionar ${e.name}"><svg><use href="#i-plus"/></svg></button></div>`).join('')}</div>`;
-    }
-    if (cat.list) {
-      html += `<div class="mlist">${cat.list.map((g) => `<div class="mlist__group">${g.group}</div>` + g.items.map(([n, p]) => `<div class="mlist__item"><span>${n}</span><i></i><b>R$ ${brl(p)}</b><button class="mlist__add" type="button" data-add="${n}" aria-label="Adicionar ${n}"><svg><use href="#i-plus"/></svg></button></div>`).join('')).join('')}</div>`;
-    }
-    grid.innerHTML = html;
+    activeCat = id;
+    const cat = cats.find((c) => c.id === id);
+    if (!cat) return;
+    const withImg = cat.items.filter((i) => i.img);
+    const extras = cat.items.filter((i) => !i.img);
+    grid.innerHTML = withImg.map(cardHTML).join('') + (extras.length ? listHTML(extras) : '');
     bindTilt();
     bindCursorTargets(grid);
   }
@@ -202,9 +271,7 @@
       }
     });
   });
-  renderCat(window.MENU[0].id);
-  requestAnimationFrame(() => movePill($('.tab.is-active', tabsEl), true));
-  window.addEventListener('resize', () => movePill($('.tab.is-active', tabsEl), true));
+  window.addEventListener('resize', () => { const a = $('.tab.is-active', tabsEl); a && movePill(a, true); });
 
   // Tilt 3D + brilho nos cards
   function bindTilt() {
@@ -225,6 +292,8 @@
       card.addEventListener('pointerleave', () => { rx(0); ry(0); });
     });
   }
+
+  setMenu(...staticMenu());
 
   /* ---------- Cursor + magnético ---------- */
   const cursor = $('.cursor');

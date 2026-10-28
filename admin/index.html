@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Painel · Gordinho Burguer</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0806">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=2">
+</head>
+<body>
+  <!-- ===== Sem conexão ===== -->
+  <section class="screen center" id="screen-setup" hidden>
+    <div class="card narrow">
+      <img src="../assets/favicon.svg" alt="" width="64" height="64">
+      <h1 class="display">Painel quase pronto</h1>
+      <p>O painel ainda não foi ligado ao Firebase. Siga o guia <b>FIREBASE.md</b> que está no projeto e cole a configuração em <code>js/firebase-config.js</code>.</p>
+      <a class="btn btn--primary" href="?teste=1">Abrir em modo de teste</a>
+    </div>
+  </section>
+
+  <!-- ===== Login ===== -->
+  <section class="screen center" id="screen-login" hidden>
+    <form class="card narrow" id="login-form">
+      <img src="../assets/favicon.svg" alt="" width="64" height="64">
+      <h1 class="display">Painel do Gordinho</h1>
+      <p class="muted">Entre com a conta da equipe.</p>
+      <label class="field"><span>E-mail</span><input id="login-email" name="email" type="email" autocomplete="username" required></label>
+      <label class="field"><span>Senha</span><input id="login-pw" name="pw" type="password" autocomplete="current-password" required></label>
+      <p class="form-error" id="login-error" hidden></p>
+      <button class="btn btn--primary" type="submit" id="login-btn">Entrar</button>
+      <p class="test-note" id="login-test" hidden>Modo de teste: qualquer e-mail e senha entram.</p>
+    </form>
+  </section>
+
+  <!-- ===== App ===== -->
+  <div class="app" id="screen-app" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/favicon.svg" alt="" width="40" height="40">
+        <div><b>Gordinho</b><small>Painel da loja</small></div>
+      </div>
+      <nav class="views" role="tablist">
+        <button class="view-tab is-active" data-view="pedidos" role="tab">Pedidos <span class="badge" id="badge-novos" hidden>0</span></button>
+        <button class="view-tab" data-view="cardapio" role="tab">Cardápio</button>
+        <button class="view-tab" data-view="loja" role="tab">Loja</button>
+      </nav>
+      <div class="top-actions">
+        <div class="store-switch" id="store-switch" role="group" aria-label="Status da loja">
+          <button data-mode="open">Aberta</button>
+          <button data-mode="auto">Auto</button>
+          <button data-mode="closed">Fechada</button>
+        </div>
+        <button class="icon-btn" id="sound-btn" type="button" aria-pressed="true" title="Som de novos pedidos">🔔</button>
+        <button class="icon-btn" id="logout-btn" type="button" title="Sair">⎋</button>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+
+    <!-- Pedidos -->
+    <main class="view" id="view-pedidos">
+      <div class="summary" id="summary"></div>
+      <div class="board" id="board">
+        <section class="col" data-col="novo"><h2>Novos <span></span></h2><div class="col__list"></div></section>
+        <section class="col" data-col="preparo"><h2>Em preparo <span></span></h2><div class="col__list"></div></section>
+        <section class="col" data-col="entrega"><h2>Prontos / em rota <span></span></h2><div class="col__list"></div></section>
+        <section class="col" data-col="fim"><h2>Finalizados hoje <span></span></h2><div class="col__list"></div></section>
+      </div>
+    </main>
+
+    <!-- Cardápio -->
+    <main class="view" id="view-cardapio" hidden>
+      <div class="import-box" id="import-box" hidden>
+        <div>
+          <b>Seu cardápio ainda não está no sistema</b>
+          <p class="muted">Importe os itens que já estão no site para começar a editar preços, fotos e disponibilidade por aqui.</p>
+        </div>
+        <button class="btn btn--primary" id="import-btn" type="button">Importar cardápio do site</button>
+      </div>
+      <div class="menu-admin" id="menu-admin">
+        <aside class="cats">
+          <h2>Categorias</h2>
+          <ul id="cat-list"></ul>
+          <form class="inline-form" id="cat-form">
+            <input id="cat-name" placeholder="Nova categoria" aria-label="Nome da nova categoria">
+            <button class="btn btn--small" type="submit">Adicionar</button>
+          </form>
+        </aside>
+        <section class="prods">
+          <div class="prods__head">
+            <h2 id="prods-title">Produtos</h2>
+            <input class="search" id="prod-search" type="search" placeholder="Buscar produto…" aria-label="Buscar produto">
+            <button class="btn btn--primary btn--small" id="new-prod" type="button">+ Novo produto</button>
+          </div>
+          <div id="prod-list" class="prod-list"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Loja -->
+    <main class="view" id="view-loja" hidden>
+      <form class="card settings" id="store-form">
+        <h2>Funcionamento</h2>
+        <p class="muted" id="store-now"></p>
+        <fieldset class="seg">
+          <legend>Status da loja</legend>
+          <label><input type="radio" name="mode" value="auto"><span>Automático pelo horário</span></label>
+          <label><input type="radio" name="mode" value="open"><span>Aberta agora</span></label>
+          <label><input type="radio" name="mode" value="closed"><span>Fechada agora</span></label>
+        </fieldset>
+        <div class="row">
+          <label class="field"><span>Abre às</span><input type="time" name="start" id="store-start"></label>
+          <label class="field"><span>Fecha às</span><input type="time" name="end" id="store-end"></label>
+        </div>
+        <p class="muted small">Fora do horário (no modo automático) ou com a loja fechada, o site mostra "Fechado" e não aceita pedidos.</p>
+        <button class="btn btn--primary" type="submit">Salvar</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- Editor de produto -->
+  <dialog class="modal" id="prod-modal">
+    <form method="dialog" class="modal__inner" id="prod-form">
+      <header class="modal__head"><h2 id="prod-modal-title">Produto</h2><button class="icon-btn" value="cancel" formnovalidate aria-label="Fechar">✕</button></header>
+      <div class="modal__body">
+        <div class="img-edit">
+          <div class="img-edit__preview" id="img-preview"><span>Sem foto</span></div>
+          <div class="img-edit__actions">
+            <label class="btn btn--small">Escolher foto<input type="file" accept="image/*" id="img-input" hidden></label>
+            <button class="btn btn--small btn--ghost" type="button" id="img-remove">Remover</button>
+            <small class="muted">A foto é reduzida automaticamente.</small>
+          </div>
+        </div>
+        <label class="field"><span>Nome</span><input name="name" required></label>
+        <label class="field"><span>Descrição</span><textarea name="desc" rows="3"></textarea></label>
+        <div class="row">
+          <label class="field"><span>Preço (R$)</span><input name="price" type="number" step="0.01" min="0" required></label>
+          <label class="field"><span>Categoria</span><select name="categoryId" id="prod-cat"></select></label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Selo <i>(opcional)</i></span><input name="tag" placeholder="Ex.: Mais pedido"></label>
+          <label class="field"><span>Subgrupo da lista <i>(opcional)</i></span><input name="subgroup" placeholder="Ex.: Sucos"></label>
+        </div>
+        <div class="checks">
+          <label class="check"><input type="checkbox" name="available"><span>Disponível</span></label>
+          <label class="check"><input type="checkbox" name="featured"><span>Destaque no carrossel</span></label>
+        </div>
+        <div class="groups">
+          <div class="groups__head"><h3>Complementos</h3><button class="btn btn--small" type="button" id="add-group">+ Grupo</button></div>
+          <p class="muted small">Ex.: "Ponto da carne" (escolha 1, obrigatório) ou "Adicionais" (até 5, opcional).</p>
+          <div id="groups"></div>
+        </div>
+      </div>
+      <footer class="modal__foot">
+        <button class="btn btn--ghost" value="cancel" formnovalidate>Cancelar</button>
+        <button class="btn btn--primary" value="save" id="prod-save">Salvar produto</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../js/firebase-config.js?v=4"></script>
+  <script src="../js/menu-data.js?v=4"></script>
+  <script type="module" src="admin.js?v=2"></script>
+</body>
+</html>
