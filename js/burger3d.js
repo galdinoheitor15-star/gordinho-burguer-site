@@ -15,18 +15,49 @@ const progressEl = document.querySelector('.stage__progress span');
 const wordEl = document.querySelector('.stage__word');
 const labelsEl = document.getElementById('labels');
 
+/* ---------- Qualidade conforme o computador ----------
+   alta: tudo ligado · leve: sem sombras/transparências, resolução 1x · sem3d: foto no lugar.
+   Dá para forçar com ?qualidade=alta|leve|sem3d */
+function detectTier() {
+  const forced = new URLSearchParams(location.search).get('qualidade');
+  if (forced in { alta: 1, leve: 1, sem3d: 1 }) return { alta: 'high', leve: 'low', sem3d: 'off' }[forced];
+  let gpu = '';
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    if (!gl) return 'off';
+    const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+    gpu = String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+  } catch { return 'off'; }
+  // aceleração de vídeo desligada: o navegador desenha pelo processador e trava
+  if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(gpu)) return 'off';
+  const cores = navigator.hardwareConcurrency || 8;
+  const mem = navigator.deviceMemory || 8;
+  if (cores <= 4 || mem <= 4 || /intel.*(hd|uhd)|mali-[gt]?[1-7]\d|adreno.*\b[3-5]\d\d\b|powervr/i.test(gpu)) return 'low';
+  return 'high';
+}
+let tier = detectTier();
+window.__burgerTier = tier;
+
+function goOff() {
+  document.documentElement.classList.add('no-webgl');
+  window.__burgerTier = 'off';
+  window.dispatchEvent(new Event('resize'));
+}
+if (tier === 'off') { goOff(); throw new Error('3D desligado neste computador'); }
+
 let renderer;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: tier === 'high', alpha: true, powerPreference: 'high-performance' });
 } catch (err) {
-  document.documentElement.classList.add('no-webgl');
+  goOff();
   throw err;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(tier === 'high' ? Math.min(window.devicePixelRatio, 2) : 1);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = tier === 'high';
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
@@ -407,6 +438,38 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
+// versão leve: tira o que mais pesa na placa de vídeo
+function applyLow() {
+  tier = 'low';
+  window.__burgerTier = 'low';
+  renderer.setPixelRatio(1);
+  renderer.shadowMap.enabled = false;
+  scene.traverse((o) => {
+    if (!o.material) return;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
+      if (m.isMeshPhysicalMaterial) { m.transmission = 0; m.clearcoat = 0; m.sheen = 0; }
+      m.needsUpdate = true;
+    });
+  });
+  eGeo.setDrawRange(0, 90);
+  resize();
+}
+if (tier === 'low') applyLow();
+
+// mede o FPS real e reduz a qualidade sozinho se o computador não acompanhar
+let lastT = performance.now(), acc = 0, frames = 0, bad = 0, dead = false;
+function watchFps() {
+  const now = performance.now(), dt = now - lastT;
+  lastT = now;
+  if (document.hidden || dt > 250) { acc = 0; frames = 0; return; }
+  acc += dt; frames++;
+  if (frames < 90) return;
+  const fps = (1000 * frames) / acc;
+  acc = 0; frames = 0;
+  if (tier === 'high' && fps < 28) return applyLow();
+  if (tier === 'low' && fps < 16) { if (++bad >= 2) { dead = true; goOff(); } } else bad = 0;
+}
+
 /* ---------- Input ---------- */
 const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
 window.addEventListener('pointermove', (e) => {
@@ -435,9 +498,18 @@ function stageProgress() {
   return clamp01(-r.top / (r.height - window.innerHeight));
 }
 
+let warmed = false;
 function frame() {
+  if (dead) return;
   requestAnimationFrame(frame);
   if (!visible) return;
+  // nada é desenhado atrás da tela de carregamento: só prepara os shaders uma vez
+  if (!started) {
+    if (!warmed) { warmed = true; renderer.compile(scene, camera); }
+    lastT = performance.now();
+    return;
+  }
+  watchFps();
   const t = clock.getElapsedTime();
   const p = stageProgress();
   pSmooth += (p - pSmooth) * (reduced ? 1 : 0.09);

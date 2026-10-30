@@ -126,3 +126,23 @@
 .track-chip[hidden] { display: none; }
 .track-chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(255, 140, 26, 0.25); animation: nowPulse 1.6s infinite; }
 @media (max-width: 520px) { .track-chip { max-width: calc(100% - 120px); } .track-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+
+/* computador sem 3D: abertura vira uma tela normal com foto */
+.no-webgl .stage { height: auto; }
+.no-webgl .stage__sticky { position: relative; min-height: 100vh; min-height: 100svh; }
+.no-webgl #burger-canvas, .no-webgl .stage__chapter, .no-webgl .labels, .no-webgl .stage__outro, .no-webgl .stage__progress { display: none; }
+.no-webgl .stage__fallback {
+  display: block;
+  inset: auto;
+  right: var(--gutter);
+  top: 50%;
+  width: min(42vw, 600px);
+  transform: translateY(-50%) rotate(3deg);
+}
+.no-webgl .stage__fallback img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 28px; box-shadow: 0 40px 80px -30px rgba(255, 140, 26, 0.45); }
+@media (max-width: 900px) {
+  .no-webgl .stage__sticky { display: flex; flex-direction: column; }
+  .no-webgl .hero { position: relative; inset: auto; }
+  .no-webgl .stage__fallback { position: relative; inset: auto; width: auto; margin: 28px var(--gutter) 40px; transform: rotate(2deg); }
+  .no-webgl .stage__fallback img { aspect-ratio: 16 / 10; }
+}

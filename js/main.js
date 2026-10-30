@@ -408,10 +408,31 @@
     gsap.fromTo('.nav > *', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 1, stagger: 0.07, delay: 0.3, ease: 'expo.out' });
   }
 
+  let readyFired = false, opened = false, failsafe = 0;
   function siteReady() {
+    if (readyFired) return;
+    readyFired = true;
     window.__siteReady = true;
     window.dispatchEvent(new Event('site:ready'));
   }
+  function openSite() {
+    if (opened) return;
+    opened = true;
+    clearTimeout(failsafe);
+    $('.preloader')?.remove();
+    document.body.classList.remove('is-loading');
+    lenis?.start();
+    setupReveals();
+    ScrollTrigger.refresh();
+  }
+  // rede de segurança: em PC lento ou com falha de rede, a tela de carregamento nunca fica presa
+  failsafe = setTimeout(() => {
+    if (opened) return;
+    gsap.set('[data-hero-line]', { yPercent: 0, rotateX: 0 });
+    gsap.set('[data-hero-fade], #status, .nav > *', { opacity: 1, y: 0 });
+    siteReady();
+    openSite();
+  }, 12000);
 
   const loadPromise = new Promise((res) => (document.readyState === 'complete' ? res() : window.addEventListener('load', res)));
   const fontsPromise = document.fonts ? document.fonts.ready : Promise.resolve();
@@ -419,10 +440,8 @@
 
   if (reduced) {
     ready.then(() => {
-      $('.preloader').remove();
-      document.body.classList.remove('is-loading');
-      setupReveals();
       siteReady();
+      openSite();
     });
     return;
   }
@@ -441,7 +460,9 @@
     .to(counter, { v: 80, duration: 1.6, ease: 'power2.inOut', onUpdate: () => paintCount() }, 0);
 
   function paintCount() {
-    $('#pl-count').textContent = Math.round(counter.v);
+    const el = $('#pl-count');
+    if (!el) return; // a tela de carregamento já foi fechada pela rede de segurança
+    el.textContent = Math.round(counter.v);
     gsap.set('.preloader__bar span', { scaleX: counter.v / 100 });
   }
 
@@ -454,6 +475,7 @@
       .to('.preloader__panel--1', { yPercent: 0, duration: 0.7, ease: 'expo.inOut' }, '-=0.2')
       .to('.preloader__panel--2', { yPercent: 0, duration: 0.7, ease: 'expo.inOut' }, '-=0.55')
       .add(() => {
+        if (opened) return;
         $('.preloader').style.background = 'transparent';
         $('.preloader__inner').style.display = 'none';
         document.body.classList.remove('is-loading');
@@ -462,11 +484,6 @@
       })
       .to('.preloader__panel--2', { yPercent: -100, duration: 0.9, ease: 'expo.inOut' })
       .to('.preloader__panel--1', { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, '-=0.75')
-      .add(() => {
-        $('.preloader').remove();
-        lenis?.start();
-        setupReveals();
-        ScrollTrigger.refresh();
-      });
+      .add(openSite);
   });
 })();
