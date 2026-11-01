@@ -377,8 +377,8 @@
 
         <form class="pane pane--checkout" id="checkout-form" novalidate>
           <p class="closed-note" id="closed-note" hidden>A loja está fechada agora. Você pode enviar o pedido e ele será atendido a partir das 16h.</p>
-          <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" autocomplete="name" placeholder="Como te chamamos?"><small>Informe seu nome</small></div>
-          <div class="field"><label for="f-fone">Seu WhatsApp</label><input id="f-fone" name="fone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(81) 9 0000-0000"><small>Informe um número com DDD</small></div>
+          <div class="field"><label for="f-nome">Seu nome</label><input maxlength="80" id="f-nome" name="nome" autocomplete="name" placeholder="Como te chamamos?"><small>Informe seu nome</small></div>
+          <div class="field"><label for="f-fone">Seu WhatsApp</label><input maxlength="20" id="f-fone" name="fone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(81) 9 0000-0000"><small>Informe um número com DDD</small></div>
 
           <fieldset class="choice">
             <legend>Como quer receber?</legend>
@@ -387,9 +387,9 @@
           </fieldset>
 
           <div id="addr-fields" class="field-group">
-            <div class="field"><label for="f-rua">Rua e número</label><input id="f-rua" name="rua" autocomplete="street-address" placeholder="Rua, número, complemento"><small>Informe o endereço</small></div>
-            <div class="field"><label for="f-bairro">Bairro</label><input id="f-bairro" name="bairro" placeholder="Bairro"><small>Informe o bairro</small></div>
-            <div class="field"><label for="f-ref">Ponto de referência <i>(opcional)</i></label><input id="f-ref" name="referencia" placeholder="Perto de..."></div>
+            <div class="field"><label for="f-rua">Rua e número</label><input maxlength="120" id="f-rua" name="rua" autocomplete="street-address" placeholder="Rua, número, complemento"><small>Informe o endereço</small></div>
+            <div class="field"><label for="f-bairro">Bairro</label><input maxlength="60" id="f-bairro" name="bairro" placeholder="Bairro"><small>Informe o bairro</small></div>
+            <div class="field"><label for="f-ref">Ponto de referência <i>(opcional)</i></label><input maxlength="100" id="f-ref" name="referencia" placeholder="Perto de..."></div>
           </div>
 
           <fieldset class="choice">
@@ -398,9 +398,9 @@
             <label><input type="radio" name="pagamento" value="cartao"><span>Cartão</span></label>
             <label><input type="radio" name="pagamento" value="dinheiro"><span>Dinheiro</span></label>
           </fieldset>
-          <div class="field" id="troco-field" hidden><label for="f-troco">Troco para quanto? <i>(opcional)</i></label><input id="f-troco" name="troco" inputmode="decimal" placeholder="Ex.: 100"></div>
+          <div class="field" id="troco-field" hidden><label for="f-troco">Troco para quanto? <i>(opcional)</i></label><input maxlength="12" id="f-troco" name="troco" inputmode="decimal" placeholder="Ex.: 100"></div>
 
-          <div class="field"><label for="f-obs">Observações <i>(opcional)</i></label><textarea id="f-obs" name="obs" rows="3" placeholder="Ex.: sem cebola, refri do Gordinho Feliz de uva"></textarea></div>
+          <div class="field"><label for="f-obs">Observações <i>(opcional)</i></label><textarea maxlength="300" id="f-obs" name="obs" rows="3" placeholder="Ex.: sem cebola, refri do Gordinho Feliz de uva"></textarea></div>
           <p class="form-hint">Ao enviar, seu pedido abre no WhatsApp da loja já escrito. É só tocar em enviar por lá para confirmar.</p>
         </form>
 

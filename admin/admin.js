@@ -316,7 +316,7 @@ $('#cat-list').addEventListener('click', async (e) => {
   }
   if (act === 'rename') {
     const li = btn.closest('.cat');
-    li.innerHTML = `<form class="inline-form" style="flex:1"><input value="${esc(c.name)}" aria-label="Novo nome"><button class="btn btn--small" type="submit">OK</button></form>`;
+    li.innerHTML = `<form class="inline-form" style="flex:1"><input maxlength="80" value="${esc(c.name)}" aria-label="Novo nome"><button class="btn btn--small" type="submit">OK</button></form>`;
     const f = $('form', li);
     $('input', f).focus();
     f.addEventListener('submit', async (ev) => { ev.preventDefault(); const name = $('input', f).value.trim(); if (name) await be.saveCategory({ id: c.id, name, order: c.order ?? i }); renderMenu(); });
@@ -377,7 +377,7 @@ function groupHTML(g = { name: '', min: 0, max: 1, options: [] }) {
   return `
     <div class="grp">
       <div class="grp__top">
-        <label><span>Nome do grupo</span><input data-k="name" value="${esc(g.name)}" placeholder="Ex.: Adicionais"></label>
+        <label><span>Nome do grupo</span><input maxlength="80" data-k="name" value="${esc(g.name)}" placeholder="Ex.: Adicionais"></label>
         <label><span>Mínimo</span><input data-k="min" type="number" min="0" value="${Number(g.min) || 0}"></label>
         <label><span>Máximo</span><input data-k="max" type="number" min="1" value="${Number(g.max) || 1}"></label>
         <button class="btn btn--small btn--danger" type="button" data-g-act="del">Remover</button>
@@ -387,7 +387,7 @@ function groupHTML(g = { name: '', min: 0, max: 1, options: [] }) {
     </div>`;
 }
 function optHTML(o = { name: '', price: 0 }) {
-  return `<div class="opt-row"><input data-k="oname" value="${esc(o.name)}" placeholder="Ex.: Bacon extra"><input data-k="oprice" type="number" step="0.01" min="0" value="${Number(o.price) || 0}" aria-label="Preço adicional"><button class="btn btn--small btn--ghost" type="button" data-g-act="del-opt" aria-label="Remover opção">✕</button></div>`;
+  return `<div class="opt-row"><input maxlength="100" data-k="oname" value="${esc(o.name)}" placeholder="Ex.: Bacon extra"><input data-k="oprice" type="number" step="0.01" min="0" value="${Number(o.price) || 0}" aria-label="Preço adicional"><button class="btn btn--small btn--ghost" type="button" data-g-act="del-opt" aria-label="Remover opção">✕</button></div>`;
 }
 function openEditor(p) {
   editing = p || null;
